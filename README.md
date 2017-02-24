@@ -29,8 +29,9 @@ If you are using BWA on a large cluster, be aware that it requires write access 
 
 You can skip this part if you have already built a genome class database and an autocross weights file, and are simply installing Gist on a cluster for crunching data. In addition to the included tools, Griebel et al.'s [Flux Simulator](http://sammeth.net/confluence/display/SIM/Home) (which is Java-based) and Python 2.7 are required for generating the synthetic metagenomes used during the neural network training process. In order to run Delin and Lincomp, you will also need some taxonomic reference tables available from the NCBI FTP site, particularly:
 
-ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/gi_taxid_nucl.dmp.gz
-ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
+`ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/gi_taxid_nucl.dmp.gz`
+
+`ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz`
 
 Extract these two archives into a working directory called 'taxonomy'. You will need to CD into this directory whenever running Delin or Lincomp.
 
@@ -44,9 +45,13 @@ Installation
 Navigate to `gist/src/build` and type `make gist`. Copy the resulting binary (`gist`), the FGS profiles subdirectory (`fgs_profiles/`) and the configuration file (`gist.conf`) to a location in your `PATH`, e.g.
 
 ```mkdir /usr/local/gist
+
 cp gist /usr/local/gist
+
 cp gist.conf /usr/local/gist
+
 cp -R fgs_profiles /usr/local/gist
+
 export PATH=$PATH:/usr/local/gist```
 
 On shared systems it may be advisable to replace `/usr/local` with `~/bin`.
@@ -60,6 +65,7 @@ Gist currently ships with three utilities, Delin, Lincomp, and Genepuddle2. Deli
 From within `gist/tools/delin`, type:
 
 ```g++ -o delin main.cpp
+
 cp delin /usr/local/gist```
 
 (Assuming you made the `/usr/local/gist` directory in the previous step.)
@@ -71,6 +77,7 @@ IMPORTANT: See also the "Building databases" prerequisites, above.
 From within `gist/tools/lincomp/build`, type:
 
 ```make lincomp
+
 cp lincomp /usr/local/gist```
 
 IMPORTANT: See also the "Building databases" prerequisites, above.
