@@ -25,6 +25,15 @@ BWA can be downloaded from its [official site](http://bio-bwa.sourceforge.net).
 
 If you are using BWA on a large cluster, be aware that it requires write access to its own directory in some cases and may crash unexpectedly if the drive is mounted read-only. Gist only requires that "bwa" is in the PATH.
 
+### Building databases
+
+You can skip this part if you have already built a genome class database and an autocross weights file, and are simply installing Gist on a cluster for crunching data. In addition to the included tools, Griebel et al.'s [Flux Simulator](http://sammeth.net/confluence/display/SIM/Home) (which is Java-based) and Python 2.7 are required for generating the synthetic metagenomes used during the neural network training process. In order to run Delin and Lincomp, you will also need some taxonomic reference tables available from the NCBI FTP site, particularly:
+
+ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/gi_taxid_nucl.dmp.gz
+ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
+
+Extract these two archives into a working directory called 'taxonomy'. You will need to CD into this directory whenever running Delin or Lincomp.
+
 ### Other prerequisites
 
 The other prerequisites, [alglib](http://www.alglib.net/) and [FragGeneScan](http://omics.informatics.indiana.edu/FragGeneScan/), have been embedded directly within Gist.
@@ -41,6 +50,36 @@ cp -R fgs_profiles /usr/local/gist
 export PATH=$PATH:/usr/local/gist```
 
 On shared systems it may be advisable to replace `/usr/local` with `~/bin`.
+
+### Setting up the tools
+
+Gist currently ships with three utilities, Delin, Lincomp, and Genepuddle2. Delin and Genepuddle2 are used during the data preparation process to annotate genomes and create synthetic metagenomes, respectively.  
+
+1. Building Delin:
+
+From within `gist/tools/delin`, type:
+
+```g++ -o delin main.cpp
+cp delin /usr/local/gist```
+
+(Assuming you made the `/usr/local/gist` directory in the previous step.)
+
+IMPORTANT: See also the "Building databases" prerequisites, above.
+
+2. Building Lincomp:
+
+From within `gist/tools/lincomp/build`, type:
+
+```make lincomp
+cp lincomp /usr/local/gist```
+
+IMPORTANT: See also the "Building databases" prerequisites, above.
+
+3. Installing Genepuddle2:
+
+Genepuddle2 requires Python 2.7 and Griebel et al.'s [Flux Simulator](http://sammeth.net/confluence/display/SIM/Home). To use Genepuddle2, ensure these prerequisites are installed, and then go to `gist/tools/genepuddle2` and type:
+
+```cp * /usr/local/gist```
 
 Generating simulated data
 -------------------------
@@ -79,7 +118,7 @@ Generates actual final classifications using the learned weights. Use the `-resu
 Licence
 -------
 
-Gist is provided under the GNU General Public License, version 3.0. See http://www.gnu.org/copyleft/gpl.html for more information.
+Gist, Genepuddle2, Lincomp, and Delin are provided under the GNU General Public License, version 3.0. See http://www.gnu.org/copyleft/gpl.html for more information.
 
 Gist incorporates code from ALGLIB and FragGeneScan, which are also provided under the GNU GPL:
 
