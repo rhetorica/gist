@@ -1,7 +1,7 @@
 generative inference of sequence taxonomy (GIST)
 ================================================
 
-version 0.7.17 "shipwrecked and comatose"
+version 0.8.00 "don't panic"
 
 rhetorica@cs.toronto.edu
 
