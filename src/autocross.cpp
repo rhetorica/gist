@@ -72,6 +72,7 @@ string METHOD_NAMES[MAX_VOTE] = {
 	"bwa", // 15
 	"16s", // 16
 	"prior", // 17
+	"bias" // 18
 };
 
 extern bool* has_protein; // whether or not a peptide could be extrapolated for a given read
@@ -187,7 +188,11 @@ void autocross_load_weights(string Wfn) {
 					forclassifiers(k) if(!method_is_rc((VOTETYPE)k)) {
 						if(METHOD_NAMES[k] == classifier_type) {
 							if(autocross_MCW[k][i] == 0) {
-								f >> autocross_MCW[k][i];
+								if(UNWEIGHTED_METHOD[k])
+									autocross_MCW[k][i] = 1;
+								else
+									f >> autocross_MCW[k][i];
+
 								this_done = true;
 							}
 
@@ -351,6 +356,8 @@ number simpleweight(VOTETYPE a) {
 		return p16s_weight;
 	case PRIOR_AP:
 		return ap_weight;
+	case PRIOR_BIAS:
+		return 1;
 	default:
 		cerr << "Unexpected weight inquiry during training: " << a << endl;
 		exit(98);
@@ -445,6 +452,8 @@ number autocross_score(bool mode) {
 
 			if(USE_METHOD[PRIOR_16S]) votes[i] += class_16s[i] * p16s_weight * autocross_MCW[PRIOR_16S][i];
 			if(USE_METHOD[PRIOR_AP]) votes[i] += class_ap[i] * ap_weight * autocross_MCW[PRIOR_AP][i];
+
+			if(USE_METHOD[PRIOR_BIAS]) votes[i] += 1 * 1 * autocross_MCW[PRIOR_BIAS][i];
 		}
 
 		// votes are now final log scores.
@@ -555,10 +564,13 @@ void autocross_train() {
 	srand(time(NULL));
 
 	foreach(k, MAX_VOTE) foreach(i, cc) autocross_MCW[k][i] = 0;
+
 	forclassifiers(k) {
-		if(method_is_rc((VOTETYPE)k))
+		if(UNWEIGHTED_METHOD[k]) {
+			foreach(i, cc) autocross_MCW[k][i] = 1;
+		} else if(method_is_rc((VOTETYPE)k)) {
 			foreach(i, cc) autocross_MCW[k][i] = 0;
-		else {
+		} else {
 			foreach(i, cc) autocross_MCW[k][i] = ((number)(rand()) / (number)RAND_MAX) / 4.0 + 0.375;
 		}
 	}
@@ -610,7 +622,7 @@ void autocross_train() {
 		number MCWsum = 0;
 		foreach(i, cc) {
 //			number rl_error = (autocross_rl_true[i] - autocross_rl_seen[i]) / dc; // ranging from -1 to +1
-			forclassifiers(k) if(!method_is_rc((VOTETYPE)k)) {
+			forclassifiers(k) if(!method_is_rc((VOTETYPE)k) && !UNWEIGHTED_METHOD[k]) {
 				autocross_MCW[k][i] += autocross_MC_error[k][i] * learning_rate; // * (1 + rl_error);
 				if(autocross_MCW[k][i] < 0) autocross_MCW[k][i] = 0.0001;
 				if(autocross_MCW[k][i] > 1) autocross_MCW[k][i] = 0.9999;
@@ -618,7 +630,7 @@ void autocross_train() {
 			}
 		}
 
-		forclassifiers(k) if(!method_is_rc((VOTETYPE)k)) {
+		forclassifiers(k) if(!method_is_rc((VOTETYPE)k) && !UNWEIGHTED_METHOD[k]) {
 			foreach(i, cc) {
 				autocross_MCW[k][i] /= MCWsum;
 			}

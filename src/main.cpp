@@ -68,9 +68,10 @@ const char* codons = "FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADD
 const char* nucleotides = "TCAG";
 const char* peptides = "FLSYCWPHQRIMTNKVADEG";
 
-bool USE_METHOD[MAX_VOTE];		// methods that score() needs to pay attention to
-bool ENABLE_METHOD[MAX_VOTE];	// all methods this session will consider
-bool ADD_METHOD[MAX_VOTE];		// methods that classify() needs to pay attention to
+bool USE_METHOD[MAX_VOTE];			// methods that score() needs to pay attention to
+bool ENABLE_METHOD[MAX_VOTE];		// all methods this session will consider
+bool ADD_METHOD[MAX_VOTE];			// methods that classify() needs to pay attention to
+bool UNWEIGHTED_METHOD[MAX_VOTE];	// priors that autocross can't optimize
 
 bool outclasses = false;
 
@@ -1676,7 +1677,7 @@ int main(int argc, char** argv) {
  	cerr << "generative inference of sequence taxonomy (gist)" << endl;
  	cerr << "version " << GIST_VERSION << endl;
 	cerr << "built " << BUILD_TIME << endl;
-	cerr << "2012-2016 rhetorica@cs.toronto.edu" << endl;
+	cerr << "2012-2017 rhetorica@cs.toronto.edu" << endl;
 	cerr << endl;
 
 	output_mode = OUTPUT_READABLE;
@@ -2098,7 +2099,14 @@ int main(int argc, char** argv) {
 		ENABLE_METHOD[NT_SB] = false;
 	}
 
-	foreach(i, MAX_VOTE) if(method_weights[0][i] == 0 && method_weights[1][i] == 0) ENABLE_METHOD[i] = false;
+	foreach(i, MAX_VOTE) {
+		if(i != PRIOR_16S && i != PRIOR_AP)
+			UNWEIGHTED_METHOD[i] = false;
+		else
+			UNWEIGHTED_METHOD[i] = true;
+
+		if(method_weights[0][i] == 0 && method_weights[1][i] == 0) ENABLE_METHOD[i] = false;
+	}
 
 	ENABLE_METHOD[NT_NB_RC] = ENABLE_METHOD[NT_NB];
 	ENABLE_METHOD[NT_NN_RC] = ENABLE_METHOD[NT_NN];

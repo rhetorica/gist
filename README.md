@@ -45,13 +45,9 @@ Installation
 Navigate to `gist/src/build` and type `make gist`. Copy the resulting binary (`gist`), the FGS profiles subdirectory (`fgs_profiles/`) and the configuration file (`gist.conf`) to a location in your `PATH`, e.g.
 
 ```mkdir /usr/local/gist
-
 cp gist /usr/local/gist
-
 cp gist.conf /usr/local/gist
-
 cp -R fgs_profiles /usr/local/gist
-
 export PATH=$PATH:/usr/local/gist```
 
 On shared systems it may be advisable to replace `/usr/local` with `~/bin`.
@@ -65,7 +61,6 @@ Gist currently ships with three utilities, Delin, Lincomp, and Genepuddle2. Deli
 From within `gist/tools/delin`, type:
 
 ```g++ -o delin main.cpp
-
 cp delin /usr/local/gist```
 
 (Assuming you made the `/usr/local/gist` directory in the previous step.)
@@ -77,7 +72,6 @@ IMPORTANT: See also the "Building databases" prerequisites, above.
 From within `gist/tools/lincomp/build`, type:
 
 ```make lincomp
-
 cp lincomp /usr/local/gist```
 
 IMPORTANT: See also the "Building databases" prerequisites, above.

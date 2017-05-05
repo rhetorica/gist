@@ -59,12 +59,14 @@ enum VOTETYPE {
 	NT_BWA, // 15
 	PRIOR_16S, // 16
 	PRIOR_AP, // 17
+	PRIOR_BIAS, // 18
 	MAX_VOTE
 };
 
 #define BUILD_TIME __DATE__ " " __TIME__
 
-#define GIST_VERSION "0.7.17 shipwrecked and comatose + fgs 1.16 + alglib 3.8.0 + autocross 3b (no count regularization)"
+#define GIST_VERSION "0.8.00 don't panic + fgs 1.16 + alglib 3.8.0 + autocross 3c (unweighted priors)"
+// #define GIST_VERSION "0.7.17 shipwrecked and comatose + fgs 1.16 + alglib 3.8.0 + autocross 3b (no count regularization)"
 // #define GIST_VERSION "0.7.16 thundersnail + fgs 1.16 + alglib 3.8.0 + autocross 3b (no count regularization)"
 // #define GIST_VERSION "0.7.15 tenebre MCMLXXXIV + fgs 1.16 + alglib 3.8.0 + autocross 4"
 // #define GIST_VERSION "0.7.14 statistics + fgs 1.16 + alglib 3.8.0 + autocross 3a"
@@ -314,6 +316,7 @@ extern size_t derands; // how many bad nucleotides have we randomly guessed valu
 extern bool ADD_METHOD[MAX_VOTE]; // determine scores for these methods in this pass (for classify.cpp)
 extern bool USE_METHOD[MAX_VOTE]; // sum scores for these methods in this pass (for score.cpp)
 extern bool ENABLE_METHOD[MAX_VOTE]; // all methods ever considered by this session (global)
+extern bool UNWEIGHTED_METHOD[MAX_VOTE]; // ignore autocross weightings for this method
 
 extern size_t cc; // class count - how many classes are we working with?
 

@@ -329,6 +329,7 @@ number classify_read(std::stringstream& lout, size_t j) {
 
 		if(USE_METHOD[PRIOR_16S]) votes[i] += class_16s[i] * p16s_weight * method_weights[RUNLEVEL-1][PRIOR_16S] * (autocross_use ? autocross_MCW[PRIOR_16S][i] : 1.0);
 		if(USE_METHOD[PRIOR_AP]) votes[i] += class_ap[i] * ap_weight * method_weights[RUNLEVEL-1][PRIOR_AP] * (autocross_use ? autocross_MCW[PRIOR_AP][i] : 1.0);
+		if(USE_METHOD[PRIOR_BIAS]) votes[i] += (autocross_use ? autocross_MCW[PRIOR_BIAS][i] : 0.0);
 
 		llh += votes[i];
 	}
