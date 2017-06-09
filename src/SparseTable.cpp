@@ -24,13 +24,13 @@ number SparseTable::logmultiprob(SparseTable* genome) {
 
 	// map<long unsigned int, number> fed = map<long unsigned int, number>(*(genome->hashmap));
 
-	number reg = 1 / (number)genome->length;
+	// number reg = 1 / (number)genome->length;
 
 	for (std::map<long unsigned int, number>::iterator it=hashmap->begin(); it!=hashmap->end(); ++it) {
 		if(genome->hashmap->count(it->first)) {
-			sum += log(hashmap->at(it->first) / (number)length + reg)
+			sum += log(hashmap->at(it->first) / (number)length)
 				   -
-				   log(it->second / (number)genome->length + reg);
+				   log(it->second / (number)genome->length);
 		}
 	}
 
