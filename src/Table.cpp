@@ -72,17 +72,15 @@ void Table::clear() {
 	}
 }
 
-// #define disable_NN_distance_correction
-
 number Table::delta(Table* d) {
 	number sum = 0;
 	if(tt == NUCLEOTIDE) {
 		for(size_t i = 0; i < rows; i++) {
 			for(size_t n = 0; n < cols; n++)
-#ifndef disable_NN_distance_correction
-				sum += pow((number)(mydata[i][n]) / (number)(this->length) - (number)(d->mydata[i][n]) / (number)(d->length), 2);
+#ifdef NN_D2_STAR
+				sum += (number)(mydata[i][n] * d->mydata[i][n]);
 #else
-				sum += pow((double)(mydata[i][n]) - (double)(d->mydata[i][n]), 2);
+				sum += pow((number)(mydata[i][n]) / (number)(this->length) - (number)(d->mydata[i][n]) / (number)(d->length), 2);
 #endif
 		}
 	} else {
@@ -100,13 +98,17 @@ number Table::delta(Table* d) {
 			}
 
 			for(size_t n = 0; n < cols; n++)
-#ifndef disable_NN_distance_correction
-				sum += pow((number)(mydata[i][n]) / (number)(this->length) - (number)(d->mydata[i][n]) / (number)(d->length), 2);
+#ifdef NN_D2_STAR
+				sum += (number)(mydata[i][n] * d->mydata[i][n]);
 #else
-				sum += pow((double)(mydata[i][n]) - (double)(d->mydata[i][n]), 2);
+				sum += pow((number)(mydata[i][n]) / (number)(this->length) - (number)(d->mydata[i][n]) / (number)(d->length), 2);
 #endif
 		}
 	}
+
+#ifdef NN_D2_STAR
+	sum /= sqrt(this->length * d->length);
+#endif
 
 	return sum;
 }
@@ -171,6 +173,7 @@ void Table::sqrt_tf() {
 	}
 }
 
+// Constructor for reloading table from file
 Table::Table(string& serialized, int prefix_size, tableType newtt) {
 	smoothflag = false;
 	this->tt = newtt;
@@ -187,7 +190,7 @@ Table::Table(string& serialized, int prefix_size, tableType newtt) {
 	rows = (int)pow(base, prefix_size);
 	this->prefix_length = prefix_size;
 
-	this->length = -1; // TODO
+	this->length = -1; // handled below, in read()
 
 	this->mydata = new number*[rows];
 
@@ -199,6 +202,7 @@ Table::Table(string& serialized, int prefix_size, tableType newtt) {
 	read(x);
 }
 
+// Read table from encoded string
 void Table::read(istream& input) {
 	number** md = mydata;
 	number o;
@@ -612,7 +616,7 @@ Table::Table(char* source, int prefix_size, tableType tt) {
 
 	size_t srclen = strlen(source);
 
-	this->length = srclen - prefix_length;
+	this->length = srclen - prefix_length; // number of k-mers
 
 	smoothflag = false;
 

@@ -65,7 +65,8 @@ enum VOTETYPE {
 
 #define BUILD_TIME __DATE__ " " __TIME__
 
-#define GIST_VERSION "0.8.01 you are everything + fgs 1.16 + alglib 3.8.0 + autocross 3c (unweighted priors)"
+#define GIST_VERSION "0.8.02 asterisks + fgs 1.16 + alglib 3.8.0 + autocross 3c (unweighted priors)"
+// #define GIST_VERSION "0.8.01 you are everything + fgs 1.16 + alglib 3.8.0 + autocross 3c (unweighted priors)"
 // #define GIST_VERSION "0.8.00 don't panic + fgs 1.16 + alglib 3.8.0 + autocross 3c (unweighted priors)"
 // #define GIST_VERSION "0.7.17 shipwrecked and comatose + fgs 1.16 + alglib 3.8.0 + autocross 3b (no count regularization)"
 // #define GIST_VERSION "0.7.16 thundersnail + fgs 1.16 + alglib 3.8.0 + autocross 3b (no count regularization)"
@@ -197,6 +198,10 @@ enum VOTETYPE {
 // autocross option: return the weights that got the best classification performance, NOT the best error margin
 
 #define SCORES_BEFORE_LOWS
+
+// use D_2^* correlation for 1NN instead of euclidean
+
+#define NN_D2_STAR
 
 // maximum number of runlevels (hardcoded in some places; don't just change this!)
 
