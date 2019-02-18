@@ -29,8 +29,8 @@ If you are using BWA on a large cluster, be aware that it requires write access 
 
 You can skip this part if you have already built a genome class database and an autocross weights file, and are simply installing Gist on a cluster for crunching data. In addition to the included tools, Griebel et al.'s [Flux Simulator](http://sammeth.net/confluence/display/SIM/Home) (which is Java-based) and Python 2.7 are required for generating the synthetic metagenomes used during the neural network training process. In order to run Delin and Lincomp, you will also need some taxonomic reference tables available from the NCBI FTP site, particularly:
 
-    [ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/gi_taxid_nucl.dmp.gz](ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/gi_taxid_nucl.dmp.gz)
-    [ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz](ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz)
+    ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/gi_taxid_nucl.dmp.gz
+    ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
 
 Extract these two archives into a working directory called 'taxonomy'. You will need to CD into this directory whenever running Delin or Lincomp.
 
