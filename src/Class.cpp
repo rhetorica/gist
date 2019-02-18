@@ -714,9 +714,11 @@ void Class::closestDistance(Table *nT, Table* nrcT, Table *pT, number& mindeltaN
 		if(thisdelta == 0) break;
 	}
 
-	mindeltaN = sqrt(mindeltaN);
-	mindeltaNRC = sqrt(mindeltaNRC);
-	mindeltaP = sqrt(mindeltaP);
+	#ifndef NN_D2_STAR
+		mindeltaN = sqrt(mindeltaN);
+		mindeltaNRC = sqrt(mindeltaNRC);
+		mindeltaP = sqrt(mindeltaP);
+	#endif
 }
 
 number* Class::score(size_t row) {

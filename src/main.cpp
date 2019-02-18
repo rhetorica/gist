@@ -191,6 +191,9 @@ bool resume_mode = false;
 // prevent all display of progress clock (classify.cpp)
 extern bool no_clock_display;
 
+// dump protein sequences and quit:
+bool translate_only = false;
+
 string my_to_string(number x) {
 	ostringstream ai;
 	ai << x;
@@ -1124,8 +1127,6 @@ void gen_data_tables(size_t first, size_t stop) {
 						datum_n_rc->dump();
 					}
 				}
-
-
 			}
 
 			data_n[K][j] = datum_n;
@@ -1156,6 +1157,12 @@ void gen_data_tables(size_t first, size_t stop) {
 				has_protein[j] = false;
 			} else {
 				has_protein[j] = true;
+			
+				if(translate_only) { // todo: make this work without -ts
+					char* ntl = dv[j * 2];
+					cout << ">" << (string)ntl << endl; // sequence header
+					cout << trans << endl;
+				}
 			}
 		} else {
 			trans = NULL;
@@ -1196,6 +1203,9 @@ void gen_data_tables(size_t first, size_t stop) {
 
 		runClock(prog_status, rec_max, clock_start_time, clock_unit, clock_tag);
 	}
+
+	if(translate_only)
+		exit(0);
 }
 
 void gen_data_tables() {
@@ -1674,7 +1684,7 @@ void reload_scoretables(string* prefix, size_t k) {
 
 int main(int argc, char** argv) {
 
- 	cerr << "generative inference of sequence taxonomy (gist)" << endl;
+ 	cerr << "genome identification for short transcripts (gist)" << endl;
  	cerr << "version " << GIST_VERSION << endl;
 	cerr << "built " << BUILD_TIME << endl;
 	cerr << "2012-2017 rhetorica@cs.toronto.edu" << endl;
@@ -1843,6 +1853,9 @@ int main(int argc, char** argv) {
 		} else if(string("-r") == string(argj)) {
 			argi++;
 			class_read_length = atoi(args[argi]);
+		} else if(string("-translate") == string(argj)) {
+			translate_only = true;
+			no_clock_display = true;
 		} else if(string("-perf") == string(argj)) {
 			performance_assessment = true;
 		} else if(string("-o") == string(argj)) {
@@ -1973,6 +1986,8 @@ int main(int argc, char** argv) {
 		cout << "    -o c            output CSV" << endl;
 		cout << "    -o r            output readable taxon names (default)" << endl;
 		cout << "    -perf           report performance, assuming autocross labelled data" << endl;
+		cout << "    -translate      translate data sequences into amino acids and quit" << endl;
+		cout << "                    (requires -ts)" << endl;
 		cout << endl;
 		cout << "data sources:" << endl;
 		cout << "    -class <.ffn>   generate a class from a nucleotide FASTA file" << endl;
@@ -2148,73 +2163,76 @@ int main(int argc, char** argv) {
 
 	// end max prefix setup
 
-	if(!trust_source && p_prefix_length > 0) {
-		string mepath = getexepath();
-		mepath.append("/fgs_profiles/");
-		if(fgs_profile.length() == 0) {
-			fgs_profile = "complete";
+	if(!translate_only) {
 
-			if(!resume_mode)
-				cerr << "[head] WARNING: No HMM profile was specified; assuming 0% read error rate." << endl
-				 	 << "       If you are working with in-frame genes and not raw reads, use -ts to" << endl
-				 	 << "       switch to full-sequence translation instead of ORF prediction." << endl
-				 	 << "       Use -fgs <profile> to specify a profile and -hmms to see a list." << endl;
-		}
-		FragGeneScan_setup(mepath.c_str(), fgs_profile.c_str(), 0);
-	}
+		if(!trust_source && p_prefix_length > 0) {
+			string mepath = getexepath();
+			mepath.append("/fgs_profiles/");
+			if(fgs_profile.length() == 0) {
+				fgs_profile = "complete";
 
-	// get classes:
-
-	if(class_dir != NULL) {
-		get_paths(*class_dir, class_filenames);
-		delete class_dir;
-		class_dir = NULL;
-	}
-
-	cc = class_filenames->size();
-
-	classes = new Class*[cc];
-
-	if(cc == 0) {
-		cerr << "[head] No classes specified. Terminating." << endl
-		     << "       See gist -help for information on specifying classes." << endl;
-		return 1;
-	}
-
-	cerr << endl;
-
-	// load class priors:
-
-	if(p16s_weight > 0 && fn_16s != "") {
-		try {
-			load16S(fn_16s);
-		} catch(string* e) {
-			cerr << e;
-			return 112;
-		}
-		ENABLE_METHOD[PRIOR_16S] = true;
-	} else {
-		ENABLE_METHOD[PRIOR_16S] = false;
-	}
-
-	if(ap_weight > 0 && fn_ap != "") {
-		try {
-			loadAPriori(fn_ap);
-		} catch(string* e) {
-			cerr << e;
-			return 113;
+				if(!resume_mode)
+					cerr << "[head] WARNING: No HMM profile was specified; assuming 0% read error rate." << endl
+					 	 << "       If you are working with in-frame genes and not raw reads, use -ts to" << endl
+					 	 << "       switch to full-sequence translation instead of ORF prediction." << endl
+					 	 << "       Use -fgs <profile> to specify a profile and -hmms to see a list." << endl;
+			}
+			FragGeneScan_setup(mepath.c_str(), fgs_profile.c_str(), 0);
 		}
 
-		ENABLE_METHOD[PRIOR_AP] = true;
-	} else {
-		ENABLE_METHOD[PRIOR_AP] = false;
+		// get classes:
+
+		if(class_dir != NULL) {
+			get_paths(*class_dir, class_filenames);
+			delete class_dir;
+			class_dir = NULL;
+		}
+
+		cc = class_filenames->size();
+
+		classes = new Class*[cc];
+
+		if(cc == 0) {
+			cerr << "[head] No classes specified. Terminating." << endl
+			     << "       See gist -help for information on specifying classes." << endl;
+			return 1;
+		}
+
+		cerr << endl;
+
+		// load class priors:
+
+		if(p16s_weight > 0 && fn_16s != "") {
+			try {
+				load16S(fn_16s);
+			} catch(string* e) {
+				cerr << e;
+				return 112;
+			}
+			ENABLE_METHOD[PRIOR_16S] = true;
+		} else {
+			ENABLE_METHOD[PRIOR_16S] = false;
+		}
+
+		if(ap_weight > 0 && fn_ap != "") {
+			try {
+				loadAPriori(fn_ap);
+			} catch(string* e) {
+				cerr << e;
+				return 113;
+			}
+
+			ENABLE_METHOD[PRIOR_AP] = true;
+		} else {
+			ENABLE_METHOD[PRIOR_AP] = false;
+		}
 	}
 
 	// load classes:
 	// This step is skipped if -disk is enabled, in which case the program
 	// will load classes as needed during the scoring process.
 
-	if(!disk_mode) {
+	if(!disk_mode && !translate_only) {
 		if(use_class_threads)
 			classthreads(class_filenames, classes);
 		else
@@ -2244,7 +2262,7 @@ int main(int argc, char** argv) {
 		return 2;
 	}
 
-	if(ENABLE_METHOD[NT_BWA] && !resume_mode) {
+	if(ENABLE_METHOD[NT_BWA] && !resume_mode && !translate_only) {
 		cerr << "[head] Starting BWA runs." << endl;
 		runBWA(class_filenames, num_threads, *dataname);
 		cerr << "[head] Finished BWA runs." << endl;
@@ -2311,7 +2329,7 @@ int main(int argc, char** argv) {
 		}
 	}
 
-	cerr << "[head] Score tables generated." << endl;
+	// cerr << "[head] Score tables generated." << endl;
 	cerr << "[head] Loading lineage data." << endl;
 
 	// load lineage information:
@@ -2336,7 +2354,7 @@ int main(int argc, char** argv) {
 		}
 	}
 
-	cerr << "[head] Lineage data loaded." << endl;
+	// cerr << "[head] Lineage data loaded." << endl;
 
 	if(autocross_generate) {
 		autocross_load_labels_from_fasta();
@@ -2356,11 +2374,11 @@ int main(int argc, char** argv) {
 
 	// analysis:
 
-	if(ENABLE_METHOD[NT_BWA] && !resume_mode) {
+	if(ENABLE_METHOD[NT_BWA] && !resume_mode && !translate_only) {
 		cerr << "[head] Extracting BWA scores." << endl;
 		//prepclock(cc * dc, "matches", "extracting aligner scores");
 		parseSAMs(*dataname);
-		cerr << "[head] Done extracting BWA scores." << endl;
+		// cerr << "[head] Done extracting BWA scores." << endl;
 	}
 
 	taxscores = new std::map<int,number>[dc];

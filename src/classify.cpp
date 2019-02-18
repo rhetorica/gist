@@ -246,9 +246,12 @@ number classify_read(std::stringstream& lout, size_t j) {
 		if(USE_METHOD[NT_NN]) if(resultset[i][NT_NN] < MINV) resultset[i][NT_NN] = MINV;
 		if(USE_METHOD[NT_NN_RC]) if(resultset[i][NT_NN_RC] < MINV) resultset[i][NT_NN_RC] = MINV;
 		if(USE_METHOD[AA_NN]) if(resultset[i][AA_NN] < MINV) resultset[i][AA_NN] = MINV;
-		resultset[i][NT_NN] = 1 / resultset[i][NT_NN] / max_nn_dist;
-		resultset[i][NT_NN_RC] = 1 / resultset[i][NT_NN_RC] / max_nn_dist;
-		resultset[i][AA_NN] = 1 / resultset[i][AA_NN] / max_np_dist;
+
+		#ifndef NN_D2_STAR
+			resultset[i][NT_NN] = 1 / resultset[i][NT_NN] / max_nn_dist;
+			resultset[i][NT_NN_RC] = 1 / resultset[i][NT_NN_RC] / max_nn_dist;
+			resultset[i][AA_NN] = 1 / resultset[i][AA_NN] / max_np_dist;
+		#endif
 
 		// todo: add SB here? may be necessary as -infs are much more likely than for NB or GMM
 	}

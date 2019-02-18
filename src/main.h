@@ -65,7 +65,9 @@ enum VOTETYPE {
 
 #define BUILD_TIME __DATE__ " " __TIME__
 
-#define GIST_VERSION "0.8.02 asterisks + fgs 1.16 + alglib 3.8.0 + autocross 3c (unweighted priors)"
+#define GIST_VERSION "0.8.04 you told me they were vitamins + fgs 1.16 + alglib 3.8.0 + autocross 3c (unweighted priors)"
+// #define GIST_VERSION "0.8.03 the greatest thing since world war three + fgs 1.16 + alglib 3.8.0 + autocross 3c (unweighted priors)"
+// #define GIST_VERSION "0.8.02 asterisks + fgs 1.16 + alglib 3.8.0 + autocross 3c (unweighted priors)"
 // #define GIST_VERSION "0.8.01 you are everything + fgs 1.16 + alglib 3.8.0 + autocross 3c (unweighted priors)"
 // #define GIST_VERSION "0.8.00 don't panic + fgs 1.16 + alglib 3.8.0 + autocross 3c (unweighted priors)"
 // #define GIST_VERSION "0.7.17 shipwrecked and comatose + fgs 1.16 + alglib 3.8.0 + autocross 3b (no count regularization)"
